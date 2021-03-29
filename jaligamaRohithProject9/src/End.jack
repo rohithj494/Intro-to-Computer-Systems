@@ -1,0 +1,41 @@
+class End{
+	field int score;
+
+	//Creates an end screen which displays the stats of the previous game and gives a choice to retry or exit.
+	constructor End new(int Fscore){
+		do Screen.clearScreen();
+		do Output.moveCursor(11, 20);
+		do Output.printString("Game Over");
+		do Output.moveCursor(12, 20);
+		do Output.printString("Your final score: ");
+		do Output.printInt(score);
+		do Output.moveCursor(13, 20);
+		do Output.printString("Press y to try again. Press n to exit.");
+
+		return this;
+	}
+
+	//Option returns true if key pressed is the y key and false is anything else.
+	method boolean option(){
+		var char key;
+		let key= Keyboard.keyPressed();
+
+		while (key=0){
+			let key= Keyboard.keyPressed();
+		}
+		if (key=89){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	//Disposer function
+	method void dispose(){
+		do Memory.deAlloc(this);
+		return;
+
+	}
+
+}

@@ -1,0 +1,23 @@
+class Main {
+
+	/** Initializes a new game and starts it. */    
+	function void main() {
+		var int finalScore;
+		var boolean option;
+		var DinoGame game;
+		var End endscreen;
+		let option= true;
+
+		//Runs the game as ong as the final choice is to retry.
+		while (option){
+			let game= DinoGame.new();
+			do game.run();
+			let finalScore= game.dispose();
+			let endscreen= End.new(finalScore);
+			let option= endscreen.option();
+			do endscreen.dispose();
+		}
+		return;
+		
+	}
+}

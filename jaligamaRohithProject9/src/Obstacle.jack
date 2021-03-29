@@ -1,0 +1,87 @@
+class Obstacle {
+	field int x, y, sizex, sizey;
+	field int speed;
+	field boolean out;
+
+	//Constructor: Creates a new obstacle rectangle at the bottom right of the screen
+	constructor Obstacle new(int startx, int starty, int startsizex, int startsizey, int startspeed){
+		let out= false;
+		let sizex= startsizex;
+		let sizey= startsizey;
+		let x=startx;
+		let y= starty;
+		let speed= startspeed;
+		do draw();
+		return this;
+	}
+
+	//Draws the actual rectangle at the coordinates
+	method void draw(){
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x, y, x+sizex, y+sizey);
+
+		return;
+	}
+
+	//Function to move the obstacle by "speed" number of pixels. The more the speed, the more distance
+	//the obstacle covers in a single movement
+	method void moveX() {
+		var boolean out;
+		let out = getOut();
+		if (out){
+			return ;
+		}
+		else{
+			do Screen.setColor(false);
+			do Screen.drawRectangle(x, y, x + sizex, y + sizey);
+			let x = x - speed;
+			do Screen.setColor(true);
+			do Screen.drawRectangle(x, y, x+sizex, y+sizey);
+			return;
+		}
+			
+		}
+
+	//Function that returns true if the obstacle has travelled out of bounds to the left of the screen. 
+	//Used to dispose of an obstacle object.
+	method int getOut(){
+		if (x>speed){
+			let out=false;
+		}
+		else {
+			let out=true;
+		}
+		
+		return out;
+	}
+
+	//Disposer method
+	method void dispose() {
+		let out= true;
+		do Screen.setColor(false);
+	    do Screen.drawRectangle(x, y, x + sizex, y + sizey);
+	    let x = 500;
+	    let y = 245;
+	    do Screen.setColor(true);
+	    do Memory.deAlloc(this);
+        return;
+	}
+
+	//Standard Get functions
+	method int getX(){
+		return x;
+	}
+
+	method int getY(){
+		return y;
+	}
+
+	method int getSizeX(){
+		return sizex;
+	}
+
+	method int getSizeY(){
+		return sizey;
+	}
+
+	}

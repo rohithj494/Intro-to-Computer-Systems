@@ -1,0 +1,155 @@
+class Dino{
+	field int x, y, sizex, sizey;
+	field boolean dead;
+	field int delay;
+
+	//Constructor: Creates the player character (a very rectangular dinosaur) near the bottom left of the screen.
+	constructor Dino new(int startx, int starty, int sizeX, int sizeY){
+		let x= startx;
+		let y= starty;
+		let sizex= sizeX;
+		let sizey= sizeY;
+
+		//Delay is the amount of "time" it takes to complete half a jump.
+		let delay= 10500;
+
+		//Draws the character
+		do draw();
+		return this;
+	}
+
+	//Draws the character
+	method void draw(){
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x, y, x+sizex, y+sizey);
+
+		return;
+	}
+
+	//Jump function working: the character jumps in "steps". for every 1500 "Ticks", the character moves up by 7 pixels until it
+	//reaches the top. Then it performs the same loop, except this timem for every 1500 ticks, it moves by 7 pixels downward.
+
+	method boolean jump(Obstacle obs){
+		var int c;
+		var int jumpdelay;
+		var int delaymod;
+
+		let c= 1;
+		while (c < delay){
+			let delaymod= mod(c, 1500);
+			if (delaymod= 0){
+
+				do Screen.setColor(false);
+				do Screen.drawRectangle(x, y, x + sizex, y + sizey);
+				let y = y - 7;
+				do Screen.setColor(true);
+				do Screen.drawRectangle(x, y, x+sizex, y+sizey);
+				let c=c+1;
+
+				//After each step of the jump, we move the obstacle as well, because otherwise 
+				//the obstacle would appear frozen for the duration of the jump
+				do obs.moveX();
+
+				//After each step of the jump, the game checks if there is a collision between the character and obstacle.
+				//If there is a collision, the function returns false 
+				if (collision(obs)){
+					return false;
+				}
+
+			}
+			else{
+				let c=c+1;
+			}
+		}
+
+		//Moving the obstacle by one step when the dino is at the peak to make the jump more realistic (velocity and top is 0)
+		do obs.moveX();
+
+		//Downward loop
+		let c=1;
+		while (c < delay){
+			let delaymod= mod(c, 1500);
+			if (delaymod= 0){
+				
+				do Screen.setColor(false);
+				do Screen.drawRectangle(x, y, x + sizex, y + sizey);
+				let y = y + 7;
+				do Screen.setColor(true);
+				do Screen.drawRectangle(x, y, x+sizex, y+sizey);
+				let c=c+1;
+				//Moving obstacle after every jump step
+				do obs.moveX();
+
+				//Checking for collision after every jumpstep
+				if (collision(obs)){
+					return false;
+				}
+
+			}
+			else{
+				let c=c+1;
+			}
+		}
+
+		return true;
+	}
+
+
+	//Modulus function: returns t%a where % is the modulus operator.
+	//Logic: Repeated subtraction until the number is <b
+	method int mod(int a, int b) {
+		var int temp;
+		let temp = a;
+		if (a < b) {
+			return a;
+		}
+		while (~(temp < (b))) {
+			let temp = temp - b;
+		}
+		return temp;
+	}
+
+	//Function to check if the character and obstacle have collided in any way.
+	//Checks the boundary coordinates of the character and compares them to the obstacle.
+	method boolean collision(Obstacle obs){
+		var int obsx, obsxsize;
+		var int obsy;
+		let obsx= obs.getX();
+		let obsxsize= obs.getSizeX();
+		let obsy= obs.getY();
+
+		//If the dino is above the obstacle, then there is no scope for a collision
+		if (~((y+sizey)<obsy)){
+			if (~(x>(obsx+obsxsize)) & ~((x+sizex)<obsx)){
+				return true;
+			}
+		}
+		else{
+			return false;
+		}
+		return false;
+	}
+
+
+	//Disposer Function
+	method void dispose(){
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x, y, x + sizex, y + sizey);
+		let x = 500;
+		let y = 245;
+		do Screen.setColor(true);
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	//Standard Get functions
+	method int getX(){
+		return x;
+
+	}
+
+	method int getY(){
+		return y;
+	}
+
+}

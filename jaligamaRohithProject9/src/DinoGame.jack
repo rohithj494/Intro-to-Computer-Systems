@@ -1,0 +1,164 @@
+class DinoGame{
+	field int score;
+	field Dino myDino;
+	field Obstacle obs;
+	field int time;
+
+	//Constructor
+	constructor DinoGame new (){
+		let score=0;
+		let time=1;
+		return this;
+	}
+
+	//Main function that runs the game. It creates the player and obstacles, and moves the elements.
+	method void run(){
+		var char key;
+		var int timemod, speed, random, endx, endy;
+		var boolean play;
+		var Random randomgen;
+
+		let timemod=0;
+		let play=true;
+		let speed=5;
+		let key=Keyboard.keyPressed();
+		//Random seed
+		do randomgen.setSeed(2533);
+
+		//Splash screen
+		if (key=0){
+			do Output.moveCursor(0,0);
+			do Output.printString("Chrome Dino Game (The extremely boring version)");
+			do Output.moveCursor(10, 0);
+			do Output.printString("Objective: Dodge the incoming cactii by jumping with the UP arrow.");
+			do Output.moveCursor(20, 0);
+			do Output.printString("Press any key to start.");
+			do Output.println();
+			
+		}
+
+		while (key =0){
+			let key= Keyboard.keyPressed();
+		}
+
+		//Start game
+		do Screen.clearScreen();
+		do Output.moveCursor(0,0);
+		do Output.printString("SCORE: ");
+		do Output.printInt(score);
+
+
+		//Creating clouds
+		do Screen.drawLine(30, 15, 45, 15);
+		do Screen.drawLine(450, 30, 480, 30);
+		do Screen.drawLine(200, 37, 245, 37);
+		do Screen.drawLine(100, 75, 150, 75);
+		do Screen.drawLine(300, 100, 333, 100);
+
+		//Creating our dino, the rectangosaurus
+		let myDino= Dino.new(50, 225, 20, 30);
+
+		//Using the random number generator to create one of two obstacles: a tall one and a short but wide one
+		let random= randomgen.randRange(1);
+		if (random =0){
+			let obs= Obstacle.new(501, 235, 10, 20, speed);
+		}
+		else{
+			let obs= Obstacle.new(481, 245, 30, 10, speed);
+		}
+		
+
+		//Runs as long as some event causes play to turn to false
+		while (play){
+
+			//Segment that controls the speed of the obstacles based on the current score.
+			//Once you get past 15, theres no more incrementing of the speed.
+			if (score < 5){
+				let speed= 6;
+			}
+			else{
+				if (score < 10){
+					let speed= 10;
+				}
+				else{
+					if (score <15){
+						let speed= 15;
+					}
+					else{
+						let speed= 20;
+					}
+				}
+			}
+
+			let key= Keyboard.keyPressed();
+
+			//If UP arrow is pressed, make the dino jump. This is one timestamp.
+			if (key= 131){
+				let play=  ~myDino.jump(obs);
+				let time=time+1;
+			}
+
+			//Checking for collision after landing, just in case
+			let play= ~myDino.collision(obs);
+
+
+			//If the obsatcle has moved out of bounds, increment score, dispose of the obstacle and 
+			//create a new obstacle. This is one timestamp.
+			if (obs.getOut()){
+				let score=score+1;
+				do Output.moveCursor(0, 0);
+				do Output.printString("SCORE: ");
+				do Output.printInt(score);
+				do obs.dispose();
+				let random= randomgen.randRange(1);
+				if (random =0){
+					let obs= Obstacle.new(501, 235, 10, 20, speed);
+				}
+				else{
+					let obs= Obstacle.new(481, 245, 30, 10, speed);
+				}
+				let time=time+1;
+			}
+			else{
+				let timemod= mod(time, 1000);
+				if (timemod= 0){
+					let time=1;
+					do obs.moveX();
+					let play= ~myDino.collision(obs);
+				}
+				let time=time+1;
+			}
+		}
+
+		//Exit function, play has ended. Get ending coordinates for the message.
+		let endx= myDino.getX();
+		let endy= myDino.getY() -2;
+		do Output.moveCursor(endx/12, endy/8);
+		do Output.printString("Oops. Game Over!");
+		do Sys.wait(2000);
+		do myDino.dispose();
+		return;
+	}
+
+	//Same mod function that was used in Dino.
+	method int mod(int a, int b) {
+		var int temp;
+		let temp = a;
+		if (a < b) {
+			return a;
+		}
+		while (~(temp < (b))) {
+			let temp = temp - b;
+		}
+		return temp;
+	}
+
+
+	//Disposer function
+	method int dispose(){
+		var int Fscore;
+		let Fscore= score; 
+		do Memory.deAlloc(this);
+		return Fscore;
+	}
+}
